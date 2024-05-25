@@ -28,6 +28,11 @@ jobs:
       - name: Run unit tests
         run: echo "Running unit tests"
 
+      - name: Install kubectl
+        run: | 
+          sudo chmod +x install-kubectl.sh
+          ./install-kubectl.sh
+
   sonarqube:
     runs-on: ubuntu-latest
     steps:
@@ -137,6 +142,14 @@ jobs:
       - name: Run Docker Image to serve users
         run: |
           docker run -d -p 8080:8080 --name=medical-chatbot -e 'AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}' -e 'AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}' -e 'AWS_REGION=${{ secrets.AWS_REGION }}' ${{ secrets.AWS_ECR_LOGIN_URI }}/${{ secrets.ECR_REPOSITORY_NAME }}:latest
+
+      - name: Update kube config
+        run: aws eks --region ${{ secrets.AWS_REGION }} update-kubeconfig --name ${{ secrets.EKS_CLUSTER_NAME }}
+        
+      - name: Deploy to EKS
+        run: |
+          kubectl apply -f deployment.yaml
+          kubectl apply -f service.yaml
 
       - name: Clean previous images and containers
         run: |
