@@ -60,7 +60,7 @@ jobs:
         uses: github/codeql-action/analyze@v2
 
   build-with-trivy:
-    runs-on: ubuntu-20.04  # Changed runner OS to ubuntu-20.04
+    runs-on: ubuntu-latest  # Changed runner OS to ubuntu-20.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
