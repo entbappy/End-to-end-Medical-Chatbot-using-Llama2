@@ -59,6 +59,15 @@ jobs:
       - name: Run CodeQL analysis
         uses: github/codeql-action/analyze@v2
 
+      - name: Create ECR Repository
+        run: |
+          aws ecr describe-repositories --repository-names ${{ secrets.ECR_REPOSITORY_NAME }} || \
+          aws ecr create-repository --repository-name ${{ secrets.ECR_REPOSITORY_NAME }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
+      
   build-with-trivy:
     runs-on: ubuntu-latest  # Changed runner OS to ubuntu-20.04
     steps:
@@ -146,6 +155,18 @@ jobs:
       - name: Update kube config
         run: aws eks --region ${{ secrets.AWS_REGION }} update-kubeconfig --name ${{ secrets.EKS_CLUSTER_NAME }}
         
+      - name: Create EKS Cluster
+        run: |
+          aws eks create-cluster \
+            --name ${{ secrets.EKS_CLUSTER_NAME }} \
+            --role-arn ${{ secrets.EKS_CLUSTER_ROLE_ARN }} \
+            --resources-vpc-config subnetIds=${{ secrets.EKS_CLUSTER_SUBNET_IDS }},securityGroupIds=${{ secrets.EKS_CLUSTER_SECURITY_GROUP_IDS }} \
+            --region ${{ secrets.AWS_REGION }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
+      
       - name: Deploy to EKS
         run: |
           kubectl apply -f deployment.yaml
