@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: medical-chatbot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: medical-chatbot
+  template:
+    metadata:
+      labels:
+        app: medical-chatbot
+    spec:
+      containers:
+      - name: medical-chatbot
+        image: <your_ecr_repository_url>/kilobit/medical-chatbot:latest
+        ports:
+        - containerPort: 5005
