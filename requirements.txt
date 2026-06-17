@@ -1,7 +1,12 @@
-ctransformers==0.2.5
-sentence-transformers==2.2.2
-pinecone-client==2.2.4
-langchain==0.0.225
+ctransformers==0.2.27
+sentence-transformers>=2.2.2
+pinecone>=3.0.0
+langchain>=0.2.0
+langchain-classic>=0.1.0
+langchain-community>=0.2.0
+langchain-pinecone>=0.1.0
+langchain-core>=0.2.0
+langchain-text-splitters>=0.2.0
 flask
 pypdf
 python-dotenv
